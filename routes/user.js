@@ -5,14 +5,27 @@ var crypto = require("crypto");
 require("dotenv").config();
 var router = express.Router();
 
-//Checks if a user with the email currently exists
+/**
+ * Checks if a user with the email currently exists
+ * @param {any} database
+ * @param {string} email
+ * @returns {boolean} true/false
+ */
 async function checkUsers(database, email) {
   const mask = await database("users").where("email", email).first();
   if (!mask) return true;
   else return false;
 }
 
+/**
+ * Compares the stored hash with the supplied password object
+ * @param {any} database
+ * @param {string} email
+ * @param {string} password
+ * @returns {boolean} true/false
+ */
 async function comparePass(database, email, password) {
+  /* SELECT password FROM users WHERE email = req.body.email FIRST */
   const storedPass = await database("users")
     .select("password")
     .from("users")
@@ -29,6 +42,7 @@ router.post("/register", async (req, res, next) => {
 
   //Create query for POST
   if (!email || !password) {
+    //Send a status of 400 (Bad Request) and output an error
     res.status(400).json({
       error: true,
       message: "Request body incomplete, both email and password are required",
@@ -36,17 +50,19 @@ router.post("/register", async (req, res, next) => {
     return;
   }
   if (await checkUsers(req.db, email)) {
+    /* INSERT query INTO users */
     const query = await req.db("users").insert({
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10),
     });
-
+    //Send a status of 201 (Created Success)
     res.status(201).json({
       message: "User created",
     });
 
     return;
   } else {
+    //Send a status of 409 (Conflict) and output an error
     res.status(409).json({
       message: "User already exists",
     });
@@ -58,6 +74,7 @@ router.post("/login", async (req, res, next) => {
 
   //Create query for POST
   if (!email || !password) {
+    //Send a status of 400 (Bad Request) and output an error
     res.status(400).json({
       error: true,
       message: "Request body incomplete, both email and password are required",
@@ -66,6 +83,7 @@ router.post("/login", async (req, res, next) => {
   }
 
   if (await checkUsers(req.db, email)) {
+    //Send a status of 401 (Unauthorized) and output an error
     res.status(401).json({
       error: true,
       message: "Incorrect email or password",
@@ -77,6 +95,7 @@ router.post("/login", async (req, res, next) => {
         expiresIn: "86400",
       });
 
+      //Send a status of 200 (OK) and output a JWT token
       res.status(200).json({
         token: token,
         token_type: "Bearer",
@@ -84,6 +103,7 @@ router.post("/login", async (req, res, next) => {
       });
       return;
     } else {
+      //Send a status of 401 (Unauthorized) and output an error
       res.status(401).json({
         error: true,
         message: "Incorrect email or password",
