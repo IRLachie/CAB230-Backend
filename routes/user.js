@@ -18,8 +18,6 @@ async function comparePass(database, email, password) {
     .from("users")
     .where("email", email)
     .first();
-  console.log("stored password " + storedPass?.password);
-  console.log("password " + password);
   if (bcrypt.compareSync(password, storedPass.password)) {
     return true;
   } else return false;
