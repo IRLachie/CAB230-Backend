@@ -3,6 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+var cors = require("cors");
 
 //KNEX MYSQL HANDLER
 var knex = require("knex")({
@@ -16,6 +17,11 @@ var knex = require("knex")({
   },
 });
 
+var corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200,
+};
+
 var countriesRouter = require("./routes/countries");
 var volcanoesRouter = require("./routes/volcanoes");
 var indexRouter = require("./routes/index");
@@ -24,6 +30,9 @@ var meRouter = require("./routes/me");
 var volcanoRouter = require("./routes/volcano");
 
 var app = express();
+
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(logger("dev"));
 app.use(express.json());
