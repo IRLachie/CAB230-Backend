@@ -21,6 +21,7 @@ var volcanoesRouter = require("./routes/volcanoes");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/user");
 var meRouter = require("./routes/me");
+var volcanoRouter = require("./routes/volcano");
 
 var app = express();
 
@@ -39,6 +40,7 @@ app.use("/user", usersRouter);
 app.use("/countries", countriesRouter);
 app.use("/volcanoes", volcanoesRouter);
 app.use("/me", meRouter);
+app.use("/volcano", volcanoRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

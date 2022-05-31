@@ -14,6 +14,7 @@ router.get("/", async (req, res, next) => {
       /*/ SELECT * FROM data WHERE country = req.query.country ORDER BY id ASC /*/
       const all = await req
         .db("data")
+        .select("id", "name", "country", "region", "subregion")
         .where("country", country)
         .orderBy("id", "asc");
 
@@ -28,6 +29,7 @@ router.get("/", async (req, res, next) => {
           /*/ SELECT * FROM data WHERE country = req.query.country AND population_$[5km, 10km, 30km, 100km] ORDER BY id ASC /*/
           let result = await req
             .db("data")
+            .select("id", "name", "country", "region", "subregion")
             .where("country", country)
             .andWhere(`population_${pop[i]}`, ">", "0")
             .orderBy("id", "asc");
